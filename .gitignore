@@ -1,0 +1,7 @@
+# Node and Expo local files
+node_modules/
+.expo/
+dist/
+mobile/node_modules/
+mobile/.expo/
+mobile/dist/

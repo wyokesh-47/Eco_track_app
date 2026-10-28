@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#087443">
+  <title>EcoTrack</title>
+  <style>
+    :root{color-scheme:light;--green:#14734f;--green-dark:#0c5037;--mint:#e8f4ec;--ink:#172b22;--muted:#718078;--line:#e6ece7;--orange:#c77a28;--red:#bb493c;--surface:#f6f8f5;--shadow:0 18px 42px rgba(29,55,40,.07)}
+    *{box-sizing:border-box}
+    body{margin:0;background:#f3f6f2;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+    .app{max-width:980px;min-height:100vh;margin:auto;background:transparent;padding:24px 28px 112px}
+    header{display:flex;justify-content:flex-start;align-items:center;height:48px}
+    .brand{display:flex;align-items:center;gap:7px;color:var(--green);font-size:24px;font-weight:850;letter-spacing:-1.2px}
+    .leaf{width:15px;height:11px;border-radius:12px 2px 12px 2px;display:inline-block;background:#47ad58;transform:rotate(-33deg);position:relative}
+    .leaf:after{content:"";position:absolute;width:2px;height:13px;background:#e1f2e3;left:7px;top:-1px;transform:rotate(35deg)}
+    .welcome{margin:25px 0 22px}
+    .welcome p{margin:0 0 7px;color:var(--muted);font-size:12px;font-weight:650;letter-spacing:.04em}
+    h1{margin:0;font-size:clamp(28px,5vw,36px);letter-spacing:-1.3px;line-height:1.12}
+    .panel{display:none}
+    .panel.active{display:block}
+    .status-card{position:relative;overflow:hidden;padding:26px 28px;border-radius:26px;background:linear-gradient(120deg,#165c43 0%,#14734f 55%,#27845a 100%);color:#fff;box-shadow:0 18px 38px rgba(14,86,57,.16)}
+    .status-card:after{content:"";position:absolute;width:250px;height:250px;right:-84px;top:-130px;border:1px solid rgba(255,255,255,.12);border-radius:50%;box-shadow:0 0 0 28px rgba(255,255,255,.035),0 0 0 58px rgba(255,255,255,.025);pointer-events:none}
+    .status-top{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center}
+    .status-top span{font-size:13px;font-weight:700}
+    .badge{padding:7px 11px;border:1px solid rgba(255,255,255,.18);border-radius:999px;font-size:11px!important;background:rgba(255,255,255,.12)}
+    .status-main{position:relative;z-index:1;display:flex;align-items:center;gap:24px;margin:23px 0}
+    .gauge{width:116px;height:116px;border-radius:50%;background:conic-gradient(#d8f1d9 calc(var(--fill)*1%),rgba(255,255,255,.18) 0);display:grid;place-items:center;flex:0 0 auto}
+    .gauge-inner{width:94px;height:94px;border:1px solid rgba(255,255,255,.18);border-radius:50%;display:grid;place-items:center;align-content:center;background:#176448}
+    .gauge-value{font-size:26px;font-weight:800;line-height:1;letter-spacing:-.8px}
+    .gauge-label{font-size:10px;opacity:.8;margin-top:5px}
+    .bin-copy h2{margin:0 0 8px;font-size:clamp(19px,3vw,24px);letter-spacing:-.45px}
+    .bin-copy p{margin:0;max-width:460px;font-size:13px;line-height:1.6;opacity:.82}
+    .progress{height:6px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.2)}
+    .progress>div{height:100%;background:#d8f1d9;border-radius:inherit;transition:width .35s ease}
+    .summary{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0 27px}
+    .metric{position:relative;min-height:112px;padding:19px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 6px 20px rgba(29,55,40,.025)}
+    .metric .metric-icon{display:grid;place-items:center;width:34px;height:34px;margin-bottom:13px;border-radius:11px;background:#edf5ee;color:var(--green)}
+    .metric-icon svg{width:17px;height:17px}
+    .metric span{display:block;color:var(--muted);font-size:11px;font-weight:600}
+    .metric strong{display:block;margin-top:5px;font-size:24px;letter-spacing:-.7px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;margin:26px 0 12px}
+    .section-head h2{margin:0;font-size:18px;letter-spacing:-.35px}
+    .section-head button{padding:8px 10px;border:0;border-radius:9px;background:transparent;color:var(--green);font:inherit;font-size:12px;font-weight:750;cursor:pointer}
+    .section-head button:hover{background:var(--mint)}
+    #activityList{padding:0 18px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 6px 20px rgba(29,55,40,.025)}
+    .activity{display:flex;gap:13px;align-items:center;padding:15px 0;border-bottom:1px solid #edf1ed}
+    .activity:last-child{border-bottom:0}
+    .activity-icon{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:#eaf4ed;color:var(--green);font-size:17px;font-weight:800;flex:0 0 auto}
+    .activity-icon.alert{background:#fbf0e2;color:#b56d1c}
+    .activity-copy{flex:1;min-width:0}
+    .activity-copy strong{display:block;font-size:13px;font-weight:750}
+    .activity-copy small,.location{color:var(--muted);font-size:11px}
+    .location{display:block;margin-top:4px}
+    .activity time{color:var(--muted);font-size:10px;white-space:nowrap}
+    .more-wrap{position:relative;flex:0 0 auto}
+    .more{width:30px;height:32px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
+    .more:hover{background:var(--surface)}
+    .menu{display:none;position:absolute;right:0;top:34px;z-index:5;min-width:118px;padding:5px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+    .menu.open{display:block}
+    .menu button{display:block;width:100%;padding:9px;border:0;background:transparent;text-align:left;color:var(--ink);font:inherit;font-size:12px;cursor:pointer}
+    .menu button.delete{color:var(--red)}
+    .action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+    .action-row button{min-height:46px;border-radius:13px;font:inherit;font-size:12px;font-weight:750;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+    .action-row button:hover,.full-button:hover{transform:translateY(-1px)}
+    .secondary{background:#fff;color:var(--green);border:1px solid #c9ddcf}
+    .primary{background:var(--green);color:#fff;border:1px solid var(--green);box-shadow:0 7px 16px rgba(20,115,79,.16)}
+    .notice{display:none;margin-top:12px;padding:11px 13px;border-radius:12px;background:var(--mint);color:var(--green-dark);font-size:12px;line-height:1.45}
+    .notice.visible{display:block}
+    .bottom-nav{position:fixed;z-index:10;bottom:14px;left:50%;transform:translateX(-50%);width:min(620px,calc(100% - 32px));display:flex;justify-content:space-around;gap:8px;padding:8px 12px;background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.96);border-radius:20px;box-shadow:0 12px 38px rgba(31,60,41,.12);backdrop-filter:blur(18px)}
+    .nav-item{min-width:94px;min-height:0;padding:8px 14px;border:0;border-radius:13px;background:transparent;color:#63746e;display:flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;transition:background .18s ease,color .18s ease}
+    .nav-item .nav-icon{display:grid;place-items:center;width:21px;height:21px;flex:0 0 auto}
+    .nav-icon svg{width:100%;height:100%;overflow:visible}
+    .nav-icon .house-line{fill:none;stroke:#288c5c;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+    .nav-icon .house-leaf{fill:#63b947;stroke:#fff;stroke-width:.7}
+    .nav-icon .bell-line{fill:none;stroke:#526660;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+    .nav-icon .bell-ray{fill:none;stroke:#79bf42;stroke-width:2.3;stroke-linecap:round}
+    .nav-icon .bin-body{fill:#36a16b}
+    .nav-icon .bin-recycle{fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+    .nav-icon .bin-leaf{fill:#79bf42}
+    .nav-item.active{background:#eaf5ed;color:#14734f;font-weight:800}
+    .simple-panel{padding-top:1px}
+    .alert-overview{display:flex;align-items:center;gap:13px;margin:4px 0 16px;padding:18px;border:1px solid #f0dfc7;border-radius:18px;background:linear-gradient(120deg,#fffaf3,#fff)}
+    .alert-overview-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:#fbefdf;color:#b56d1c;font-size:20px;font-weight:800}
+    .alert-overview strong{display:block;font-size:14px}
+    .alert-overview small{display:block;margin-top:3px;color:var(--muted);font-size:11px}
+    .alert-box{position:relative;display:grid;grid-template-columns:44px 1fr auto;gap:13px;align-items:center;padding:17px;margin:12px 0;border:1px solid #f0e5d7;border-radius:18px;background:#fff;box-shadow:0 7px 20px rgba(75,55,28,.035)}
+    .alert-box-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:#fbf0e2;color:#b56d1c;font-size:19px;font-weight:800}
+    .alert-box strong{display:block;font-size:14px}
+    .alert-box small{display:block;margin-top:5px;color:var(--muted);font-size:11px}
+    .alert-level{padding:6px 9px;border-radius:999px;background:#fff3e4;color:#a76516;font-size:10px;font-weight:800;white-space:nowrap}
+    .alert-meter{grid-column:2/-1;height:5px;border-radius:999px;background:#f4ede3;overflow:hidden}
+    .alert-meter span{display:block;height:100%;border-radius:inherit;background:#d5903e}
+    .empty{padding:28px 10px;color:var(--muted);font-size:13px;text-align:center}
+    .bin-list{display:grid;gap:10px}
+    .bin-card{display:grid;grid-template-columns:42px 1fr auto 28px;gap:11px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:16px;background:#fff}
+    .bin-dot{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--mint);font-size:18px}
+    .bin-card strong{display:block;font-size:13px}
+    .bin-card small{display:block;margin-top:3px;color:var(--muted);font-size:11px}
+    .bin-percent{font-size:15px;color:var(--green);font-weight:800}
+    .bin-percent.warning{color:var(--orange)}
+    .bin-form{margin-top:16px;padding:15px;border-radius:16px;background:var(--surface)}
+    .bin-form h2{margin:0 0 10px;font-size:16px}
+    .field{margin:10px 0}
+    .field label{display:block;margin-bottom:5px;color:var(--muted);font-size:11px;font-weight:700}
+    .field input,.field select{width:100%;height:42px;padding:0 11px;border:1px solid #d6e2db;border-radius:10px;background:#fff;color:var(--ink);font:inherit;font-size:13px}
+    .full-button{width:100%;margin-top:5px;min-height:44px;border:0;border-radius:11px;background:var(--green);color:#fff;font:inherit;font-size:13px;font-weight:750;cursor:pointer}
+    .cancel-edit{display:none;width:100%;margin-top:8px;min-height:38px;border:0;background:transparent;color:var(--muted);font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+    .cancel-edit.visible{display:block}
+    @media(min-width:700px){.summary{margin-top:18px}}
+    @media(max-width:520px){.app{padding:17px 18px 104px}.brand{font-size:22px}.welcome{margin:20px 0 18px}.status-card{padding:20px;border-radius:22px}.status-main{gap:15px;margin:20px 0}.gauge{width:96px;height:96px}.gauge-inner{width:78px;height:78px}.gauge-value{font-size:23px}.bin-copy h2{font-size:18px}.bin-copy p{font-size:11px}.summary{gap:10px;margin:14px 0 24px}.metric{min-height:100px;padding:14px}.metric-icon{width:30px;height:30px;margin-bottom:10px}.metric strong{font-size:21px}.activity{gap:10px}.activity time{font-size:9px}.bottom-nav{bottom:9px;width:calc(100% - 24px);padding:6px;border-radius:17px;gap:3px}.nav-item{min-width:0;flex:1;padding:8px 5px;gap:5px;font-size:10px}.nav-item .nav-icon{width:20px;height:20px}.alert-box{grid-template-columns:38px 1fr;gap:10px;padding:14px}.alert-box-icon{width:38px;height:38px}.alert-level{grid-column:2;justify-self:start;grid-row:2}.alert-box small{line-height:1.45}.alert-meter{grid-column:1/-1}.action-row button{font-size:11px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header><div class="brand" aria-label="EcoTrack"><span class="leaf" aria-hidden="true"></span>EcoTrack</div></header>
+    <section id="home" class="panel active" aria-label="Dashboard">
+      <div class="welcome"><p>Campus waste monitoring</p><h1>Good morning, Team</h1></div>
+      <article class="status-card" aria-live="polite"><div class="status-top"><span>Bin status</span><span class="badge" id="statusBadge">Collection alert</span></div><div class="status-main"><div class="gauge" id="gauge" style="--fill:85"><div class="gauge-inner"><span class="gauge-value" id="fillValue">85%</span><span class="gauge-label">Bin full</span></div></div><div class="bin-copy"><h2 id="statusTitle">Bin 01 needs collection</h2><p id="statusDescription">Main Road · Dry waste. The bin is over the 80% alert threshold.</p></div></div><div class="progress"><div id="progressFill" style="width:85%"></div></div></article>
+      <div class="summary"><div class="metric"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M6 7l1 13h10l1-13M9 7V4h6v3M9 11v5m6-5v5"/></svg></span><span>Active bins</span><strong id="activeBins">03</strong></div><div class="metric"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12.5 9.5 17 19 7.5"/><path d="M12 3a9 9 0 1 0 9 9"/></svg></span><span>Today collected</span><strong id="collectedCount">16</strong></div></div>
+      <div class="section-head"><h2>Recent activity</h2><button type="button" data-tab="alerts">View alerts</button></div><div id="activityList"></div>
+      <div class="action-row"><button class="secondary" id="simulateButton" type="button">Simulate 80% alert</button><button class="primary" id="collectButton" type="button">Mark as collected</button></div><div class="notice" id="notice" role="status"></div>
+    </section>
+    <section id="alerts" class="panel simple-panel" aria-label="Alerts"><div class="welcome"><p>LIVE MONITORING · CAMPUS NETWORK</p><h1>Alerts</h1></div><div class="alert-overview"><span class="alert-overview-icon" aria-hidden="true">!</span><div><strong id="alertCount">Checking sensors</strong><small>Bins that need attention appear here.</small></div></div><div id="alertsList" aria-live="polite"></div></section>
+    <section id="bins" class="panel simple-panel" aria-label="Bins"><div class="welcome"><p>Create and manage bin details</p><h1>Bins</h1></div><div class="bin-list" id="binList"></div><form class="bin-form" id="binForm"><h2 id="formTitle">Add a bin</h2><div class="field"><label for="binName">Bin name</label><input id="binName" name="binName" placeholder="Example: Bin 04" required></div><div class="field"><label for="binAddress">Location / address</label><input id="binAddress" name="binAddress" placeholder="Example: Library Entrance" required></div><div class="field"><label for="wasteType">Waste type</label><select id="wasteType" name="wasteType"><option>Dry waste</option><option>Wet waste</option><option>Recyclables</option><option>Hazardous waste</option></select></div><div class="field"><label for="fillPercent">Sensor fill percentage</label><input id="fillPercent" name="fillPercent" type="number" min="0" max="100" value="0" required></div><button class="full-button" id="formSubmit" type="submit">Add bin details</button><button class="cancel-edit" id="cancelEdit" type="button">Cancel edit</button></form><div class="notice" id="binNotice" role="status"></div></section>
+  </main>
+  <nav class="bottom-nav" aria-label="App navigation"><button class="nav-item active" data-tab="home" type="button"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="house-line" d="m5 21 19-16 19 16M10 19v23h28V19M19 42V29h10v13"/><path class="house-leaf" d="M19 34c1-8 7-12 16-11-1 8-6 13-16 12m3-1 9-8"/></svg></span>Dashboard</button><button class="nav-item" data-tab="alerts" type="button"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="bell-ray" d="m10 11-4-3m4 10-5-1m28-6 4-4m-4 14 5-2"/><path class="bell-line" d="M14 30c2-3 2-7 2-12a8 8 0 0 1 16 0c0 5 0 9 2 12l3 4H11zm9 4a3 3 0 0 0 6 0M22 8a2 2 0 0 1 4 0"/></svg></span>Alerts</button><button class="nav-item" data-tab="bins" type="button"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="bin-body" d="M9 15h30l-3 28H12zm-3-4h36v4H6zm10-5h16l3 5H13z"/><path class="bin-recycle" d="m19 25 3-5 3 1m5 2 3 5-3 1m-9 4h-5l-1-4m5 3 3-5m1 3 3 4h-6"/><path class="bin-leaf" d="M36 9c0-5 4-8 9-8 0 6-3 10-9 10m-1 3c-4-3-4-7-2-11 5 3 6 7 3 11"/></svg></span>Bins</button></nav>
+  <script>
+    let bins=[
+      {id:'bin-01',name:'Bin 01',address:'Main Road',waste:'Dry waste',fill:85,state:'alert',time:'Now'},
+      {id:'bin-02',name:'Bin 02',address:'TRP Area',waste:'Wet waste',fill:42,state:'normal',time:'Now'},
+      {id:'bin-03',name:'Bin 03',address:'Science Block',waste:'Wet waste',fill:12,state:'collected',time:'10:30 AM'}
+    ];
+    let editingId=null;
+    const $=id=>document.getElementById(id);
+    function safe(value){const node=document.createElement('span');node.textContent=value;return node.innerHTML}
+    function activityText(bin){if(bin.state==='collected')return 'Collected – '+bin.waste; if(bin.fill>=80)return 'Alert – '+bin.name+' is '+bin.fill+'% full'; return bin.name+' is monitoring normally'}
+    function detailText(bin){if(bin.state==='collected')return bin.name+' · Reset to '+bin.fill+'%'; return bin.waste+' · Sensor reading: '+bin.fill+'%'}
+    function menu(bin){return '<div class="more-wrap"><button class="more" type="button" aria-label="Actions for '+safe(bin.name)+'" data-menu="'+bin.id+'">⋮</button><div class="menu"><button type="button" data-edit="'+bin.id+'">Edit bin</button><button class="delete" type="button" data-delete="'+bin.id+'">Delete bin</button></div></div>'}
+    function renderBins(){
+      $('binList').innerHTML=bins.map(bin=>'<article class="bin-card"><div class="bin-dot">♲</div><div><strong>'+safe(bin.name)+'</strong><small>'+safe(bin.address)+' · '+safe(bin.waste)+'</small></div><span class="bin-percent '+(bin.fill>=80?'warning':'')+'">'+bin.fill+'%</span>'+menu(bin)+'</article>').join('');
+      $('activeBins').textContent=String(bins.length).padStart(2,'0');
+      bindMenus();
+    }
+    function renderActivity(){
+      $('activityList').innerHTML=bins.length?bins.map(bin=>'<div class="activity"><div class="activity-icon '+(bin.fill>=80?'alert':'')+'">'+(bin.state==='collected'?'✓':bin.fill>=80?'!':'●')+'</div><div class="activity-copy"><strong>'+safe(activityText(bin))+'</strong><small>'+safe(detailText(bin))+'</small><span class="location">Location: '+safe(bin.address)+'</span></div><time>'+safe(bin.time)+'</time>'+menu(bin)+'</div>').join(''):'<p class="empty">No recent activity. Add a bin to get started.</p>';
+      bindMenus();
+    }
+    function renderAlerts(){
+      const alerts=bins.filter(bin=>bin.fill>=80);
+      $('alertCount').textContent=alerts.length?alerts.length+' bin'+(alerts.length===1?'':'s')+' need'+(alerts.length===1?'s':'')+' attention':'All clear';
+      $('alertsList').innerHTML=alerts.length?alerts.map(bin=>'<article class="alert-box"><span class="alert-box-icon" aria-hidden="true">!</span><div><strong>'+safe(bin.name)+' · '+bin.fill+'% full</strong><small>'+safe(bin.address)+' · '+safe(bin.waste)+' · Collection needed</small></div><span class="alert-level">HIGH FILL</span><div class="alert-meter" role="progressbar" aria-label="'+safe(bin.name)+' fill level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+bin.fill+'"><span style="width:'+bin.fill+'%"></span></div></article>').join(''):'<p class="empty">No active fill alerts. Your campus bins are looking good.</p>';
+    }
+    function renderHero(){
+      const hero=[...bins].sort((a,b)=>b.fill-a.fill)[0];if(!hero){$('fillValue').textContent='0%';$('gauge').style.setProperty('--fill',0);$('progressFill').style.width='0%';$('statusBadge').textContent='No bins';$('statusTitle').textContent='No bins added yet';$('statusDescription').textContent='Add a bin from the Bins tab to start monitoring.';return}
+      $('fillValue').textContent=hero.fill+'%';$('gauge').style.setProperty('--fill',hero.fill);$('progressFill').style.width=hero.fill+'%';
+      const collected=hero.state==='collected';$('statusBadge').textContent=collected?'Collected':hero.fill>=80?'Collection alert':'Monitoring normally';$('statusTitle').textContent=collected?hero.name+' is ready again':hero.fill>=80?hero.name+' needs collection':hero.name+' is monitoring normally';$('statusDescription').textContent=hero.address+' · '+hero.waste+'. '+(collected?'Sensor shows the bin was reset after collection.':hero.fill>=80?'The bin is over the 80% alert threshold.':'Sensor status is normal.');
+    }
+    function render(){renderBins();renderActivity();renderAlerts();renderHero()}
+    function closeMenus(){document.querySelectorAll('.menu.open').forEach(item=>item.classList.remove('open'))}
+    function bindMenus(){
+      document.querySelectorAll('[data-menu]').forEach(button=>button.onclick=event=>{event.stopPropagation();const target=button.parentElement.querySelector('.menu');const wasOpen=target.classList.contains('open');closeMenus();if(!wasOpen)target.classList.add('open')});
+      document.querySelectorAll('[data-edit]').forEach(button=>button.onclick=()=>startEdit(button.dataset.edit));
+      document.querySelectorAll('[data-delete]').forEach(button=>button.onclick=()=>deleteBin(button.dataset.delete));
+    }
+    document.addEventListener('click',closeMenus);
+    document.querySelectorAll('[data-tab]').forEach(tab=>tab.addEventListener('click',()=>{const target=tab.dataset.tab;document.querySelectorAll('.panel').forEach(panel=>panel.classList.toggle('active',panel.id===target));document.querySelectorAll('.nav-item').forEach(item=>item.classList.toggle('active',item.dataset.tab===target));window.scrollTo({top:0,behavior:'smooth'})}));
+    function startEdit(id){const bin=bins.find(item=>item.id===id);if(!bin)return;editingId=id;$('formTitle').textContent='Edit '+bin.name;$('binName').value=bin.name;$('binAddress').value=bin.address;$('wasteType').value=bin.waste;$('fillPercent').value=bin.fill;$('formSubmit').textContent='Save changes';$('cancelEdit').classList.add('visible');document.querySelector('[data-tab="bins"]').click();setTimeout(()=>$('binName').focus(),250)}
+    function cancelEdit(){editingId=null;$('binForm').reset();$('fillPercent').value=0;$('formTitle').textContent='Add a bin';$('formSubmit').textContent='Add bin details';$('cancelEdit').classList.remove('visible')}
+    function deleteBin(id){const bin=bins.find(item=>item.id===id);if(!bin)return;if(!confirm('Delete '+bin.name+' from this front-end preview?'))return;bins=bins.filter(item=>item.id!==id);if(editingId===id)cancelEdit();$('binNotice').textContent=bin.name+' deleted from this browser preview.';$('binNotice').classList.add('visible');render()}
+    $('cancelEdit').addEventListener('click',cancelEdit);
+    $('binForm').addEventListener('submit',event=>{event.preventDefault();const form=event.currentTarget;const data={name:form.binName.value.trim(),address:form.binAddress.value.trim(),waste:form.wasteType.value,fill:Math.max(0,Math.min(100,Number(form.fillPercent.value)))};if(editingId){const bin=bins.find(item=>item.id===editingId);Object.assign(bin,data,{state:data.fill>=80?'alert':data.fill<=15?'collected':'normal',time:'Just updated'});$('binNotice').textContent=bin.name+' updated.'}else{const id='bin-'+Date.now();bins.push({id,...data,state:data.fill>=80?'alert':data.fill<=15?'collected':'normal',time:'Just added'});$('binNotice').textContent=data.name+' added at '+data.address+'.'}$('binNotice').classList.add('visible');cancelEdit();render()});
+    $('simulateButton').addEventListener('click',()=>{const bin=bins.find(item=>item.id==='bin-01')||bins[0];if(!bin)return;bin.fill=85;bin.state='alert';bin.time='Just now';$('notice').textContent=bin.name+' reached 85%. This is a front-end alert preview; real notifications will be connected later.';$('notice').classList.add('visible');render()});
+    $('collectButton').addEventListener('click',()=>{const bin=bins.find(item=>item.id==='bin-01')||bins[0];if(!bin)return;bin.fill=12;bin.state='collected';bin.time='Just now';$('collectedCount').textContent=String(Number($('collectedCount').textContent)+1);$('notice').textContent=bin.name+' collection completed at '+bin.address+'. Sensor reset to 12%.';$('notice').classList.add('visible');render()});
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "EcoTrack",
+    "slug": "ecotrack-campus-waste",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#f3f6f2",
+    "ios": {
+      "bundleIdentifier": "com.ecotrack.campuswaste",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.ecotrack.campuswaste",
+      "adaptiveIcon": {
+        "backgroundColor": "#f3f6f2",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
