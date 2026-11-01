@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "EcoTrack",
+    "slug": "ecotrack-waste",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#14734f"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.ecotrack.waste",
+      "adaptiveIcon": {
+        "backgroundColor": "#14734f"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ecotrack-waste"
+      }
+    },
+    "plugins": [
+      "expo-status-bar",
+      [
+        "react-native-ble-plx",
+        {
+          "neverForLocation": false
+        }
+      ],
+      "./plugins/withAndroidCleartextTraffic"
+    ]
+  }
+}
